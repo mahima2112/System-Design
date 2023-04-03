@@ -1,0 +1,96 @@
+To design a timeline service that displays user’s timeline and news feed.
+Requirements:
+Functional:
+1.	User should be able to tweet quickly
+2.	See tweet timeline: User timeline and home timeline
+
+None functional:
+1.	Highly available system
+2.	Near real time system: a lag of few milliseconds is acceptable
+3.	Weak/durable Consistency: If others are able to see my tweets in few milliseconds also, that is fine
+Scale Estimation:
+1.	Traffic estimation
+Example: Here we assume some values
+Such as twitter has 150M active users
+There are 5K tweets/sec
+300K/ sec for a timeline
+2.	Storage estimation
+User table: Say it takes 100 bytes for storing the information of one user, then 100 bytes * 150M = 15GB total user data
+Tweet table: 5K tweets/sec, so for one day, 5000*24*60 = 432M/day
+Assume, there are only text tweets and one tweet will have 140 char+some metadata, ie, 300 bytes
+So, 432M*300 -> 129GB/ day
+
+So, for timeline, 300K request per second, we assume each timeline can have 100 tweets and each tweet takes around 200bytes on timeline.
+So, 300K*100*200 = 6GB data needs to be planned
+
+
+API design:
+1.	Create tweet:
+POST method
+Endpoint: /users/{userId}/tweets
+{
+“data/content”: “data here”
+}
+	     200: tweet id
+2.	Hometimeline API
+GET API
+Endpoint: /users/{userID}/hometimeline?tweets?page=1&limit=100
+
+200: all tweets
+404: not found
+3.	UserTimeline
+Endpoint: /users/{userID}/userimeline?tweets?page=1&limit=100
+200: all tweets
+404: not found
+
+TABLE DESIGN:
+1.	Tweet table:
+tweetId:
+userId:
+Name
+Email
+phoneNumber
+lastLogin
+creationType
+userType
+FOLLOWER TABLE:
+userId: foreign key
+followerId: foreign key
+
+HIGH LEVEL AND LOW-LEVEL DESIGN
+
+Home timeline:
+User timeline
+
+It’s a read heavy application
+User timeline:
+Tables:
+1.	User Table: get a user id
+2.	twitter table: sort tweets of a user 
+This will create a sorted order of tweets for timeline
+This is a cumbersome operation for multiple users
+So, we will use cache – Redis
+Key: userId-tweets, ie tweeted
+Example: abc123, 4456
+Store limited data, say 500 tweets per user because cache is also a storage with some upper limits.
+
+Home timeline:
+UserTable
+TweetTable
+FollowersTable
+Example: every user follows 100-200 pages/users
+Combining these tables and querying will be difficult as there maybe 1000+ users accessing at one time. So, it is not scalable.
+We will use caching here also. 
+Concept of broadcast/ fanout: If you make a tweet, it needs to be broadcasted to all your followers.
+We will use this for home timeline
+So, it will be added to DB, user timeline cache, and then broadcasted. So, it will go to home timeline cache for all the followers.
+Example: some celebrities have millions of followers and they are posting new year tweets at the same time, then even broadcast/fanout will fail. So we need to optimise this.
+In this case, we keep a cache, say celebrity cache. This will store all celebrities a person follows. So it will get the data from there and store it. This will be way faster than DB calls. This is called pull based mechanism.
+
+For inactive users, we will not create homeTimeline or userTimeline. This will reduce complexity.
+
+
+
+
+
+
