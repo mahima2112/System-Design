@@ -1,1 +1,142 @@
+Requirements:
+Functional:
+1.	Select the city
+2.	Search for movies
+3.	Select the show, theatre, book the ticket
+4.	You should receive the ticket on email/sms/whatsapp
+Non Functional:
+1.	Highly concurrent system
+2.	Highly consistent
+3.	Highly scalable
+4.	Highly available
+Scale Estimation:
+Traffic estimation:
+Assumptions made here are as follows:
+10 million request per month, ie, 4 request per sec
+Reads will be more here than writes, so 10:1 is read:write ratio
+10 million reads/ month, ie, 40/sec
+Storage estimation:
+100 cities are there, 10 theatre per city, 1000 seats per theatre and 3 shows per theatre
+Movies+ theatre -> 100 bytes
+Booking takes 100 bytes
+One day show details of shows for 100 cities will take: 
+100 cities * 10 theatre * 1000 seats * 3 shows * (100+100)bytes -> 0.6GB/day
+In 5 years, it will be 1TB of data almost
+
+
+API Design
+1.	Get list of cities
+/cities?country=””
+Success: 200 okay
+
+404: not found
+2.	Get list of movies by city
+/movies/city=cityId
+
+200: ok
+(movieId, movieName,releaseDate,…)
+404- not found, if there is no api
+
+3.	Get list of theatres in city
+/theatres/city=cityId
+
+200- ok
+(theatreid, theatreName..)
+404: no theatre found
+
+4.	Get shows by movie
+
+/shows?movieId=’’&city=’’
+200 ok
+(showId,showStart,showEnd, theatre,..)
+
+404: no shows found
+
+5.	Get available seats for a show
+6.	GET
+/seats?showId=’’&cityId=’’
+
+200: ok
+(seats:[{seatNo, status…}, {}])
+
+7.	Seat booking
+POST
+/book?showId=’’
+200: 
+{
+“seats”:[],
+“userId”:””,
+}
+200: created
+(bookingId, transactionId,…)
+
+404: file not found
+
+Data Model Design
+City Table:
+cityId: int – pk
+Name- varchar(50)
+State- varchar(30)
+Zipcode- int
+Country- varchar(50)
+
+Movie Table:
+movieId – int pk
+title- varchar(50)
+duration- varchar(30)
+Language- varchar(30)
+Release date- datetime
+cityId- int fk
+
+Show table:
+showId – int pk
+Date – datetime
+Starttime-datetime
+Endtime- datetime
+theatreId- int fk
+movieId- int fk
+
+Theatre table:
+theatreId – int-pk
+Name – varchar(50)
+cityId int
+
+Seat table:
+SeatId – int pk
+Seat No - int
+Type – varchar(30)
+theatreId- int fk
+
+Show_seat table:
+showSeatId: int -pk
+Status- varchar or Boolean
+Price – int
+SeatId- int fk
+ShowId- int fk
+bookingId- int fk
+
+Booking Table:
+bookingId- int pk
+NoOfSeats int 
+bookingTime datetime
+Status- varchar(10)
+userId – int fk
+showId – int fk
+
+Payment Table:
+paymentId int pk
+amount- int 
+bookingtime- datetime fk
+booking_id – int fk
+transactionId – int
+paymentMethod – varchar(30)
+
+NO SQL tables:
+Comment table
+Review table
+Trailer table
+Synopsis of the movie table
+Cast and crew table
+
+
 
