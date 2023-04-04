@@ -1,1 +1,70 @@
 We need to design an online text storing service where a user can store some plain text and receive a unique URL to access it
+
+Functional:
+1.	Generate URL from text
+2.	Generate original content from URL
+3.	Add expiration time, customizable, by default 6 months
+Non-functional:
+1.	Reliable system
+2.	Highly available
+3.	Highly scalable
+4.	Links should not be predictable
+5.	Low latency
+Scale Estimation:
+Traffic Estimation:
+100k writes/day -> 1write/sec
+Read:write -> 10:1
+1M reads per day-> 10reads/sec
+Storage Estimation:
+Max 10MB text size, user shares 10KB data on avg through URL
+100k writes*10KB-> 1GB/day -> 3.6TB/10 year
+100k*30*12*10 -> 0.36billion URLs are needed in 10 years
+Base62 encoding will be needed to encode 6 chars here
+62*6-> 56billion combinations
+0.36billiom*6-> 2.2GB data
+Memory estimation:
+80-20 rule: 20% of hot pastes lead to 80% of traffic
+We need to cache, 1GB*20%-> 200 MB of data needs to be cached
+
+API Design:
+1.	POST Method
+/paste
+{
+“apiKey”:””,
+“data:””,
+“expirationDate”:
+}
+	201 created
+2.	GET
+/{url}
+
+200: success
+404: url not found
+
+Tables:
+1.	Paste_data:
+
+Short_url ->varchar(6) pk
+Path -> varchar(512) object path to store data
+ExpirationDate-> datetime
+userId -> int
+creationDate -> datetime
+data -> varchar(10kB)
+
+2.	User table:
+Name varchar(30)
+Email varchar(30)
+Password varchar(30)
+creationDate datetime
+
+High Level Design
+10MB max data
+URL 10KB
+
+Either store data in DB or object storage like S3. Storing in S3 will take some time and storing in Db will add to the DB size. So we need to think of some hybrid approach for this.
+If data size is > 10KB, we store it to S3 and get the link finally. And only 10KB will be stored in DB inside ‘data’ field. On read query, this DB will give the output first and meanwhile S3 data will load.
+It’s a read heavy application so cache can be used
+Key- short url
+Value- 10KB+S3 link
+
+
