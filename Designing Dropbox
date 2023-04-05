@@ -1,1 +1,79 @@
 You need to design an online file hosting service that enables users to store large volumes of data on remote servers, such as dropbox or google drive
+
+Dropbox File Upload Service
+1.	Functional
+A.	Upload/download file from any device
+B.	Upload/delete the file
+C.	File should be synchronized in all the devices where the user is connected
+2.	Non-Functional
+A.	High reliability
+B.	Larger file-> 1GB
+C.	Highly consistent
+File sharing-> not supported
+
+Scale Estimation:
+1.	Traffic estimation
+500 million users
+100 million active users
+500M request/sec are coming
+
+1 person stores 100 files and avg size of file is 100KB
+There are millions of open connections at a time
+2.	Storage estimation
+500M users*100 files per person -> 50 billion files total
+File size: 50 billion*100KB -> 5PB data
+
+API Design:
+1.	Upload
+Upload(String apiKey, fileInfo file, String timestamp)
+
+apiKey- unique way to identify a user, used for throttling as well
+FileInfo contains- chunkId, chunkNumber, filename, filePath, fileExtension, fileSize, isFileOrFolder, hash
+202: created
+Returns link to storage
+404: error
+500: server issue
+2.	Download(String apiKey, fileInfo file)
+
+Data Model Design:
+1.	Users:
+userId: int pk
+username: varchar(30)
+email varchar(50)
+password varchar(50)
+2.	Devices:
+deviceId: int pk
+createdAt: datetime
+updatedAt: datetime
+
+3.	Subscription:
+userId fk
+subId: int pk
+creationdate: datetime
+planId: int fk
+updatedDate: datetime
+
+4.	Plans
+planId: pk 
+planName: varchar(50)
+cost- int
+updatedAt: datetime
+createdAt: datetime
+expirationDate: datetime
+
+5.	Object:
+objectId: int pk (file/directory)
+deviceId: fk
+type: varchar(30)
+name: varchar(30)
+createdAt: datetime
+updatedAt: datetime
+
+6.	Chunks
+chunkId- int pk
+objectId: fk
+url: varchar(50) (where is the chunk stored in dropbox)
+createdAt: datetime
+updatedAt: datetime
+
+
