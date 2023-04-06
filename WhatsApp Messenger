@@ -31,6 +31,11 @@ userId: id given to user
 offset: used to retrieve previous messages
 messageCount: the number of messages to be displayed because all messages are not fetched at a stretch
 timestamp: the last time messages were updated
+2.	sendMessage(fromUser, toUser, clientMetadata, message): this is used to send messages from one user to another
+fromUser: user sending the message
+toUser: user receiving message
+clientMetadata: metadata such as device or platform being used
+message: actual message being sent
 Models:
 1.	Profile DB:
 userId int pk
@@ -48,4 +53,11 @@ groupIcon – varchar(50)
 userId fk
 lastSeen- timestamp
 We will maintain a redis cache to fetch data first, only then move to the DB.
+
+ACKNOWLEDGEMENT SERVICE:
+This will maintain features of generating and checking acknowledgement responses. Based on the responses received, the service determines how to proceed.
+Single Tick: When a message from User A reaches User B, the server sends an acknowledgement signal to confirm that the message has been sent.
+Double Tick: After server sends a message to User B through a connection, User B sends an acknowledgement to confirm the receipt of message. The server will then send another acknowledgement to User A, which will be displayed as double tick.
+Blue Tick: When user B reads the message, it sends another acknowledgement to the server to confirm that the message has been read. The server then sends an acknowledgement message to User A, which is displayed as a blue tick.
+Last Seen: this relies on the heartbeat mechanism which sends continuous messages to the server every 5 sec. The server uses these messages to maintain a table of last seen status which any other user can easily retrieve to check their last seen status.
 
