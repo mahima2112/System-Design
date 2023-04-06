@@ -1,0 +1,51 @@
+Design a messenger service such as Whatsapp.
+
+WHATSAPP MESSENGER
+Requirements:
+1.	Functional:
+A.	Support 1:1 chats
+B.	Support group chats
+C.	Share text, images, videos and file sharing
+D.	Read/ receipt of messages
+E.	Show last seen of users
+
+2.	Non-functional:
+A.	Low latency
+B.	Highly available
+C.	Scalable
+D.	Low lags
+Traffic and scale estimation:
+10 billions messages are sent per day by 1 billion users
+There are 7lakh active users per second
+There are 40 million active messages per second
+On avg, each message has 160 characters, ie, 10B*160 = 1.6TB data per day
+A message takes 20 ms latency to get sent and each server can handle 100 concurrent connections. So we would need, (40M*20ms/100) servers to support the service, which is a fleet of 8000 servers.
+
+High Level Design:
+There are 2 services:
+1.	Chat service: manages the traffic related to online messages sent by users. This handles incoming messages, sending messages to recipients and maintaining the status of messages such as whether they are delivered, sent or read)
+2.	Transient service: manages the traffic when the user is offline.  This includes storing messages that are sent to a user while they are offline and delivering to them once they come back. It handles last seen and message acknowledgement too.
+API Design:
+1.	Conversation(userId, offset, messageCount, timestamp): this displays the conversations in a thread, like it is displayed in whatsapp.
+userId: id given to user
+offset: used to retrieve previous messages
+messageCount: the number of messages to be displayed because all messages are not fetched at a stretch
+timestamp: the last time messages were updated
+Models:
+1.	Profile DB:
+userId int pk
+username varchar(50)
+profile picture varchar(30): link to storage
+contact details: varchar(10)
+
+2.	Group DB:
+Group_id -int pk
+User ids – nvarchar
+TimeofCreation timestamp
+groupIcon – varchar(50)
+
+3.	LastSeen DB
+userId fk
+lastSeen- timestamp
+We will maintain a redis cache to fetch data first, only then move to the DB.
+
