@@ -1,1 +1,69 @@
+Requirements:
+1.	Functional:
+A.	The user can register to create an account and login to their account
+B.	User can search for rooms or homes in their proximity
+C.	Users can view prices, photos, ratings and other features
+D.	Users can make bookings backed by a fast and secure payment service.
+E.	Users can cancel a booked room.
+F.	Host can add and update rooms.
+G.	Host can keep track of bookings.
+
+2.	Non-Functional
+A.	Low latency
+B.	High scalability
+C.	High consistency
+Scale:
+500K hotels
+1000 rooms/hotel
+API Design:
+1.	/hotels
+POST
+2.	/hotels/<id>
+GET
+3.	/hotels/<id>
+PUT
+4.	/hotels/<id>/<roomId>
+GET
+DB Schema:
+1.	Hotel:
+id- int pk
+name- varchar(50)
+locality_id- int fk
+description: varchar(100)
+original_images: varchar(50)
+display_images: varchar(50)
+is_active: Boolean
+
+2.	Hotel_facilities:
+id: int pk
+is_active: Boolean
+facility_id: int fk
+
+3.	Rooms:
+Id: int pk
+Hotel_id: fk
+Display_name: varchar(30)
+Is_active: Boolean
+Quantity: int
+Price_min: int
+Price_max int
+
+4.	Facilities:
+Id: int pk
+Display_name: varchar
+
+5.	Room_facility:
+Id: int pk
+Room_id: int fk
+Facility_id: int fk
+Is_active: Boolean
+
+6.	Locality:
+Id: int pk
+City_id: int fk
+Zipcode: int
+State_id: fk int
+
+
+ 
 
