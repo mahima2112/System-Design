@@ -5,5 +5,32 @@ Functional Requirements:
 4.	Prioritization: high priority messages are prioritized over low priority like transactional over promotional
 Non-Functional Requirements:
 1.	High Availability
-2.	Easy to add many clients at all times
+2.	Easy to always add many clients
+
+LLD:
+There will be a notification service
+There will be a notification validation and prioritizer: validator will do some validations like email id should not be null etc. Prioritizer will separate the notifications priority wise and create kafka subjects and supply to Kafka accordingly.
+Rate Limiter: 
+1.	Client rate limiting: is the client allowed to call the service this many times
+2.	User to whom I am sending this notification, am I allowed to send this many number of times.
+3.	It can be sent any number of times but subscription comes here. User subscribes to a fixed number of notifications. This is done using Redis.
+Notification Handler and User Preferences:
+Notification Handler:
+User Preferences: User will select if he wants to receive promotional notification or what is the exact requirement. We will create a DB for this, mainly SQL.
+User service will be another table here for user id, email id etc.
+We have another kafka now. If SMS handler is unable to handle a lot of load, we can put it into kafka and the messages will be sent at their own pace.
+Now we have handlers on top of this kafka like:
+1.	SMS handler it can be integrated with different SMS vendors who take care of SMS in say different geos.
+2.	Resource Handler: how many SMS will be handled by which SMS handler etc. Communication between the two can be async call.
+3.	Email Handler: takes all email requests
+4.	Email Vendor: takes care of email sending. This could be SMTP server
+5.	In app notification handler: firebase for android and Apple push notifications can be used.
+6.	IVRS notification: amazon and flipkart use it. If you have placed an order of very high value, they call and confirm if you have really placed it or not.
+Pluggability: this should be pluggable to applications. It means handlers and kafka need to handle this scenario as well.
+Notification Tracker: Audits the notification being sent. This is primarily write only. Sometimes it will be read.
+Bulk Notification: example: send a notification to all users who placed an order for an item 3 days back. For this we need UI and service which takes filter criteria.
+This uses user transaction data. A parser will parse all of this because there is a possibility that since the data is coming from different places, it is coming in different formats. So we need to get all of it in a single format and put in a single DB like Mongo or elastic. 
+We have a query engine on top of it because we will use it to perform queries to get the required information.
+
+Fraud engine: to identify fraud users.
 
