@@ -4,7 +4,7 @@ Functional:
 1.	User should be able to tweet quickly
 2.	See tweet timeline: User timeline and home timeline
 
-None functional:
+Non functional:
 1.	Highly available system
 2.	Near real time system: a lag of few milliseconds is acceptable
 3.	Weak/durable Consistency: If others are able to see my tweets in few milliseconds also, that is fine
