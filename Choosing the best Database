@@ -1,1 +1,29 @@
 
+Factors on which choice of Database depends:
+1.	Structured of data available
+2.	Query pattern that you have
+3.	Amount of scale
+
+Caching: 
+If you don’t want to query the DB too much, cache it.
+There is a key and value
+Key is normally request params or where clause and value is response.
+Common used solution: redis, memcache etc.
+Redis is fairly stable and used very often.
+File storage option:
+We use blob storage for files, images, videos etc. Amazon S3 is frequently used for this. CDN is also used here to distribute that media across servers so that querying mechanism becomes fast across geos.
+Text Seach capability:
+Example: text based search in Amazon for products or text search in google maps.
+We need text search engine here. Elastic and SOLR are based on this.
+Fuzzy search:
+If user makes a mistake in spelling, we still get the result. DB identifies common spelling mistakes using edit distance. Elasticseach and SOLR is used.
+
+IMPORTANT: Elasticsearch and SOLR are search engines and not DB. Potentially data could be lost here and you need to store this data somewhere else.
+Metrics tracking data:
+Time series DB are used here. They are a kind of extension of RDBMS. Read queries are bulk and sequential. There is no random read and query. They are optimized for time series data. InfluxDB is one of the Open time series databases.
+Analytics on all data of the company: you will need a data warehouse which is a very large DB. Example: Hadoop
+Scenario to select between RDBMS and no SQL data: Structured data is stored in RDBMS if ACID properties are also needed. Non-structured is stored in no SQL DB. When you have a wide variety of attributes that can come in, or there is a wide variety of queries in the no SQL and the data size is ever increasing then you use a document DB such as MongoDB.
+If the data is ever increasing and there is a finite number of queries on the data, then columnar DB in no SQL can be used. Example: Cassandra, HBase.
+We need a combination of these DBs in real world scenarios.
+Example: building an e commerce like Amazon. For managing inventory, ACID properties are needed because inventory is fixed and accordingly only fixed number of people should be able to buy that. Since amazon has ever increasing data, so we use SQL for inventory and once the order is received, remove it from there and put it in say Cassandra.
+If you need to build a reporting tool. Like: give all users who purchased sugar in the last 30 days. There will be so many brands selling on amazon. So store the userid, productid, data in mongodb and probably use another query on RDBMS or Columnar DB
