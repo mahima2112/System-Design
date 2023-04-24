@@ -12,13 +12,15 @@ Non-Functional Requirements:
 
 LLD:
 There will be a notification service
-There will be a notification validation and prioritizer: validator will do some validations like email id should not be null etc. Prioritizer will separate the notifications priority wise and create kafka subjects and supply to Kafka accordingly.
+There will be a notification validation and prioritizer: 
+validator will do some validations like email id should not be null etc. 
+Prioritizer will separate the notifications priority wise and create kafka subjects and supply to Kafka accordingly.
 Rate Limiter: 
 1.	Client rate limiting: is the client allowed to call the service this many times
 2.	User to whom I am sending this notification, am I allowed to send this many number of times.
 3.	It can be sent any number of times but subscription comes here. User subscribes to a fixed number of notifications. This is done using Redis.
 Notification Handler and User Preferences:
-Notification Handler:
+Notification Handler: Handles sending of both types of notifications
 User Preferences: User will select if he wants to receive promotional notification or what is the exact requirement. We will create a DB for this, mainly SQL.
 User service will be another table here for user id, email id etc.
 We have another kafka now. If SMS handler is unable to handle a lot of load, we can put it into kafka and the messages will be sent at their own pace.
