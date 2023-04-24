@@ -27,7 +27,7 @@ GET
 5.	/book
 POST
 Body: (user_id, room_id, quantity, start_date, end_date)
-Returns: 200 id booking is successful
+Returns: 200 if booking is successful
 DB Schema:
 1.	Hotel:
 id- int pk
