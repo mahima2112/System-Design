@@ -1,7 +1,10 @@
 Functional Requirements:
 1.	Pluggable
 2.	Send notification
-3.	SaaS: because you need rate limiting and you need to know who sent what number of notifications. If user keeps receiving notification for everything, then he might get hundreds of notifications per day which will add to a bad user experience. Say, amazon limited the user to get 5 notifications per day. There are 2 types of notifications: transactional and promotional. Transactional are fine because say you place an order, then you would notification for everything like payment received/ failed, OTP, order placed successfully, tracking order messages etc. Promotional need to be limited by all means.
+3.	SaaS: because you need rate limiting and you need to know who sent what number of notifications. If user keeps receiving notification for everything, then he might get hundreds of notifications per day which will add to a bad user experience. 
+    Say, amazon limited the user to get 5 notifications per day. There are 2 types of notifications: transactional and promotional. 
+    Transactional are fine because say you place an order, then you would need a notification for everything like payment received/ failed, OTP, order placed successfully, tracking order messages etc. 
+    Promotional need to be limited by all means.
 4.	Prioritization: high priority messages are prioritized over low priority like transactional over promotional
 Non-Functional Requirements:
 1.	High Availability
