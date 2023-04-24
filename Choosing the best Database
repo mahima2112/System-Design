@@ -1,6 +1,6 @@
 
 Factors on which choice of Database depends:
-1.	Structured of data available
+1.	Structure of data available
 2.	Query pattern that you have
 3.	Amount of scale
 
