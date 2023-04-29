@@ -1,1 +1,32 @@
+Functional:
+1.	See cabs
+2.	ETA and approximate cost
+3.	Book a cab
+4.	Location tracking
+Non-Functional:
+1.	Global application
+2.	Low latency
+3.	Highly available
+4.	Highly consistent
+5.	Scale well, say, 100 million monthly active users,  
+
+Main problem:
+We have to locate the closest drivers to a person. A city is divided into segments and assigned some segment ids. Given certain coordinates for each segment and cab, you can understand which cab belongs to which segment mathematically. We will have a map service which will calculate routes from point A to B, shortest path etc. Consider that we are using Google Maps for that.
+Now, if there is less traffic in an area, then segments are merged. There is a service to do all this.
+User App:
+All the users get connected through a ‘user app’ which communicates to a load balancer which finally talks to a ‘user service’. User service communicates to UserDB which is SQL here and Redis cache. If the information is not available in redis, then it is fetched from the SQL DB.
+There is also a ‘cab request service’ which communicates to the ‘cab finder’.
+
+Driver App:  
+This app communicates to the driver service via a load balancer. The driver service pulls the data either from the redis cache or the SQL database.
+Now, this driver app also talks to a location service through a series of servers. As and when the driver is moving through the city, their location is sent through the location service which then queries the map service to find out which segment does the driver belong to. The driver and the service need to be connected always. So, this is done by the web socket. Each driver is connected to a web socket. Websocket is used because the driver is moving constantly, so you cannot keep creating connections for tracking new location. Now, with websocket, only one connection is created and the same can be reused even if the server wants to communicate to the user and tell him that some ride has been requested. Now, web socket manager will manage the web socket connections and determine which web socket is connected to which driver.
+ There is also a redis connected to this web socket manager which manages these connections between host and driver. It will have both the mappings, ie, which host is connected to what all drivers and which driver is connected to which mapping. Now since web socket also gives the location of driver, so we store it in Cassandra. Cassandra because the application is write heavy. 
+Now, live location of driver and route used is stored. Location service takes care of this. It also talks to map service which maintains the segments that the city is divided into. It also gives the ETA of travel from point A to point B. Map service also stores which drivers are in which segment.
+Trip service: this stores all the trip related information. It sits on top of a trips SQL database and Cassandra Database. SQL stores the information of all the trips that are about to happen in the near future or are happening at that moment. Once, the trip is completed, the data is moved to Cassandra. Cassandra is good for read operations. All the information is not stored in SQL right away because over time, it will become a very huge database. The movement of data from SQL to Cassandra is handled by the trip archiver service. This will run periodically to pull the data from SQL and push to Cassandra. Customer will communicate to a cab request service. This will communicate to a cab finer and ultimately to the information goes to a kafka. Now the cab finder will query the segment and coordinates where the user is. It then queries surrounding segments. It could be possible that a driver is in another segment but is ultimately closest to the customer. So, we need to get this information too.
+So, we need say 10 drivers which are nearest to the user. Location service returns this result to the cab finder service. Now, there are multiple modes in which the cab request could be served. Say, it’s a premium customer, so assign the best driver out of the lot. Or if it’s an average customer, we might want to broadcast the request to whoever accepts it. To do such actions, we have a driver priority engine. It has the drivers for a customer and it arranges them as per the mode and returns back. Now it communicates to the cab finder and tries to check all such drivers who will be eligible to take the trip.
+
+Kafka: there is a payment service which sits on top of Kafka which listens to all the trip completion events and accordingly inserts a record in SQL DB for the user ID.
+On top of this Kafka, there would also be a spark streaming cluster. This shows a heatmap showing the scarcity of drivers in an area so that drivers can accordingly move to those clusters. It puts the data to a Hadoop cluster which will help to further do the analysis. On top of this, there can be multiple ML jobs.
+
+ 
 
