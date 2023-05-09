@@ -10,9 +10,13 @@ Low latent
 High Level Design:
 It is a service used to control overuse of an API. Every user has a quota for every time interval.
 Algos for APIs:
-1.	Token Bucket: bucket has some capacity of tokens and once that is over, there will not be an accepted request. This works per user. It is very memory efficient but not suitable for distributed system.
-2.	Leaky Bucket: there is a leak in the bucket, ie, queue. So one end, requests will be added and at the other end, the requests will be processed one by one. If the queue is full then no more requests are added. It is suitable for single server system. Disadvantage: if queue is full, you will ignore any other new request coming in.
-3.	Fixed window: We have a counter to increment when a request is received. So we maintain the counter along with number of requests allowed. Issue: there is a sudden burst of traffic.
+1.	Token Bucket: bucket has some capacity of tokens and once that is over, there will not be an accepted request.
+    This works per user. It is very memory efficient but not suitable for distributed system.
+2.	Leaky Bucket: there is a leak in the bucket, ie, queue. So one end, requests will be added and at the other end, the requests will be processed one by one. 
+    If the queue is full then no more requests are added. It is suitable for single server system. Disadvantage: if queue is full, you will 
+    ignore any other new request coming in.
+3.	Fixed window: We have a counter to increment when a request is received. So we maintain the counter along with number of requests allowed. 
+    Issue: there is a sudden burst of traffic.
 4.	Sliding window: It solves the issue of fixed window. There are 2 types:
 A.	Sliding Log
 B.	Sliding counter
