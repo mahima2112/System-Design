@@ -1,20 +1,27 @@
 Requirements:
 1.	Functional:
+FOR A USER/CUSTOMER: 
 A.	The user can register to create an account and login to their account
 B.	User can search for rooms or homes in their proximity
 C.	Users can view prices, photos, ratings and other features
 D.	Users can make bookings backed by a fast and secure payment service.
 E.	Users can cancel a booked room.
-F.	Host can add and update rooms.
-G.	Host can keep track of bookings.
+FOR A HOTEL:
+A. Hotel should be able to onboard.
+B.	Hotel can add and update rooms.
+C.	Hotel can keep track of bookings.
 
 2.	Non-Functional
 A.	Low latency
 B.	High scalability
 C.	High consistency
+
+
 Scale:
 500K hotels
 1000 rooms/hotel
+
+
 API Design:
 1.	/hotels
 POST
