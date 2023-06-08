@@ -21,7 +21,28 @@ Scale:
 500K hotels
 1000 rooms/hotel
 
+Overview:
 
+The hotel has a UI connected to a Hotel service which is responsible to onboard a hotel, allow them to add or update rooms etc. This is connected through a Load Balancer and 
+once the traffic increases, we can add more instances of the hotel services making it a horizontally scalable component. 
+Hotel service has a SQL DB because the data is very much in fixed schema. 
+Now say the hotel has updated some images/ videos of their property, then those are stored in CDN and URL of that is stored in SQL. 
+
+Now say, a hotel gets added to the system and we want to notify the users about it, then we will use a Kafka which is connected to the Notification Service finally 
+and does this.
+
+We will also add a 'Search' facility for the user and ElasticSearch DB will facilitate this. 
+All this forms a part of the 'User Application' where everything goes through a load balancer and is horizontally scalable.
+Next we have a booking service which is connected to a SQL DB and stores the booking related information.
+Booking service talks to a Payment service. Once payment is successful, the booking is marked completed and confirmed.
+
+Say, the hotel is booked within some dates and you dont want to show it on the UI anymore, Kafka takes care of this too and then 'search' will remove it from the UI.
+
+We only store live data in this SQL. This means that bookings that are started but not completed. Once a booking is completed or cancelled, we move it through "Archival Service" 
+to the Cassandra cluster. CAssandra is good for huge number of reads and writes.
+
+Now, the user and Hotel can use a UI just to see the bookings, which uses a booking management service which is connected to both SQL and Cassandra to show both live 
+and completed bookings. Connected via a load balancer. We also add a redis on top of the SQL DB to reduce the load on it.
 API Design:
 1.	/hotels
 POST
