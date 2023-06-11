@@ -22,12 +22,14 @@ So, n is computed accordingly
 
 ARCHITECTURE:
 UI <-> Load balancer <-> URL shortening service <-> Cassandra DB
-Assume the service has multiple instances, so they should never generate same shortened URL for 2 long URLs. So, to avoid collisions, we use Redis. Every time it receives a URL, it increments a counter and ultimately leads to a new URL.
+Assume the service has multiple instances, so they should never generate same shortened URL for 2 long URLs. So, to avoid collisions, we use Redis. 
+Every time it receives a URL, it increments a counter and ultimately leads to a new URL.
 Now the load at Redis will increase.
 It will be a single point of failure, which is bad.
 Having multiple Redis will be tricky and if one Redis instance cant satisfy all the load, then we see increased latency.
 
-Having multiple Redis instances will be good unless these instances generate duplicates. So, we need to ensure that they don’t generate duplicates. Now, if you assign one Redis to use certain counters and the other one for something else, then adding a third Redis will need someone to manage it all.
+Having multiple Redis instances will be good unless these instances generate duplicates. So, we need to ensure that they don’t generate duplicates. 
+Now, if you assign one Redis to use certain counters and the other one for something else, then adding a third Redis will need someone to manage it all.
 Another system without Redis and without a single point of failure:
 Use a token service for unique counter. A token service will assign a range to each instance of URL service to maintain uniqueness.
 
