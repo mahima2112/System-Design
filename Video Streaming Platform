@@ -1,1 +1,28 @@
 
+Design Video Streaming Platform
+
+Requirements:
+Functional:
+1.	Upload videos
+2.	Search videos
+3.	Play videos
+4.	Support all devices
+Non-Functional:
+1.	No/low buffering, i.e., low latency and high availability
+2.	 Increase in user session time, i.e., low latency and high availability
+3.	Good recommendation system
+Some devices will support some formats and some dimensions or aspect ratios, so we need to consolidate all the formats to be supported. People also come from different bandwidth zones which need to be supported.
+User of the platform:
+1.	Client: it’s a device on which you stream the video
+2.	Users: who consume/watch the video
+3.	Production house: that upload the video
+
+CLIENT:
+They don’t download the entire video to your device. They request for chunks from the server and play it chunk by chunk. It figures out the device first and then the formats of video needed. Example: a high-definition content is needed and subsequent chunks are not received in time then it requests for a lower quality chunk. At runtime, it checks the availability of quality and gives the result accordingly. This is called as ‘Adaptive Bitrate Streaming’. There are libraries to build this system or people have their own logic.
+
+Production Houses have their own servers for upload because this heavy content cant be uploaded easily through a mobile or computer. For this, there is an ‘Asset Onboarding Service’, give it the URL. This will reach the content and add it to its own datastore, i.e., Amazon S3. We use Cassandra which has the metadata about the video. From S3, an event is sent to Kafka giving this information. Now, content processor is a workflow engine which takes care of this uploaded video.
+Content processor makes this video into chunks through a file chunker. It can divide the video into chunks based upon size or time. For each chunk, a content filter is called to look into legality, piracy etc. these checks will happen parallelly on chunks through multiple workers. Now the next service is content tagger. The tagger will go through the chunks and look for tags that are suitable for the video altogether. These could be hashtags or thumbnails that makes the video more searchable. 
+Next is the transcoder which transforms one file type to another.
+Next is the Quality converter: it is present since we have different bandwidths at different users. Now these chunks are uploaded to the CDN through a CDN uploader. All these events are added to Kafka. 
+There is a spark streaming that filters the chunks and tags using tagger. 
+There is an asset service attached to kafka to track the chunks and their progress. It stores the information in Cassandra. Once everything is done, it sends a notification to the user saying that the movie has been uploaded.
