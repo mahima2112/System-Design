@@ -22,6 +22,7 @@ On avg, each message has 160 characters, ie, 10B*160 = 1.6TB data per day
 A message takes 20 ms latency to get sent and each server can handle 100 concurrent connections. So we would need, (40M*20ms/100) servers to support the service, which is a fleet of 8000 servers.
 
 High Level Design:
+
 There are 2 services:
 1.	Chat service: manages the traffic related to online messages sent by users. This handles incoming messages, sending messages to recipients and maintaining the status of messages such as whether they are delivered, sent or read)
 2.	Transient service: manages the traffic when the user is offline.  This includes storing messages that are sent to a user while they are offline and delivering to them once they come back. It handles last seen and message acknowledgement too.
