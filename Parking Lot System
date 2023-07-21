@@ -1,1 +1,79 @@
+Requirements:
+Functional:
+1.	Reserve a spot for parking
+2.	Make payment
+Non functional:
+1.	Consistent so that same spot is not given to 2 people
+Assumptions:
+3 types of vehicles: compact, regular, large
+3 prices for these parking with flat rates
+Public Endpoints:
+1.	/reserve
+Params: garage_id
+Start_time
+End_time
+Returns: spot_id, reservation_id
+
+2.	/payment
+Params: reservation_id
+(likely uses a third party)
+
+3.	/ cancel
+Params: reservation_id
+Internal Endpoints
+1.	/calculate_payment
+Params: reservation_id
+2.	/freespots
+Params: garage_id, vehicle_type, time
+Smaller vehicles can get larger spots too in worst case
+3.	/allocate_spot
+Params: garage_id, vehicle_type, time
+4.	/create_account
+Params: userId, password
+5.	/login
+Params: userid, password
+
+Scale: upper bound to 200 spots per floor and 10 floors per garage
+We can opt for RDBMS for this because schema is mostly fixed
+Tables:
+1.	Reservation:
+-	Id
+-	Garage_id
+-	Spot_id
+-	Starttime
+-	Endtime
+-	Paid Boolean
+-	User_id
+2.	Garage
+-	Id
+-	Zipcode (can help in sharding later also)
+-	Address
+-	Rate_compact
+-	Rate_large
+-	Rate_regular
+3.	Spot
+- id
+- status (available or not enum)
+- Garage_id
+- vehicle_type enum
+         4. Users
+- id
+- email
+- password
+         5. Vehicles
+- id
+- license
+- user_id
+- vehicle_type
+
+HLD:
+UI -> backend server -> DB
+We can have multiple instances of the DB and use load balancer for the same.
+We need a strong consistency approach rather than eventual.
+
+
+
+
+
+
 
