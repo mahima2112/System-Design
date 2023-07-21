@@ -1,1 +1,30 @@
 This can be closely related as Instagram feed
+
+Requirements:
+Functional:
+1.	Store/ get images
+2.	Like/comment posts : Question to ask: can you comment on a comment ie recursive or not. We are keeping it simple it. You can only like  a comment
+3.	Follow someone
+4.	Publish a news feed
+Non Functional
+1.	Scalable
+2.	Available
+Tables:
+Likes table:
+-	Parent id (you need to check if its coming from a comment or a post)
+-	User id
+-	Timestamp
+-	Actions
+-	Type (comment or post, basically type of parent)
+-	id
+Post table:
+-	Post id
+-	Image link
+-	Text
+-	- user id
+Comment table:
+-	Id
+-	Text
+-	timestamp
+Activity table:
+-	Likes   
