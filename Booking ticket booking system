@@ -35,7 +35,7 @@ Success: 200 okay
 
 200: ok
 (movieId, movieName,releaseDate,…)
-404- not found, if there is no api
+404- not found, if there is no movie
 
 3.	Get list of theatres in city
 /theatres/city=cityId
